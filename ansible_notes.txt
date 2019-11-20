@@ -1,0 +1,113 @@
+ansible
+#############################################
+
+ansible --list-hosts all
+/etc/ansible/hosts
+
+Inventory file
+----
+
+dev file name
+
+/desktop/ansible/
+
+dev
+---
+[loadbalencer]
+lb01
+
+[webservers]
+wb01
+wb02
+
+[databaseservers]
+db01
+
+[control servers]
+cs01 ansible_connection=local
+
+-------
+
+$ansible -i dev --list-hosts all
+
+-------
+
+/desktop/ansible/ansible.cfg
+
+[defaults]
+inventory=./dev
+
+---
+$ansible dev --list-hosts all (#i not required now)
+  
+global config file is on /etc/ansible/ansible.cfg
+
+----------------------------------------------------------
+
+$ansible -m ping all
+
+$ansible -m command "hostname" all
+
+##############################################################
+
+
+play book
+
+/desktop/ansible/playbooks
+first_play.yml
+
+---
+ -hosts: all
+  tasks:
+      - command: hostname
+
+$ansible-playbook playbooks/first_play.yml
+
+------------------------------------------------
+
+/playbooks
+
+loadbalecer.yml
+
+---
+ -hosts: all
+  become:true # excuting with sudo permissions
+  tasks:
+    -name : install nginx
+     apt : name=nginx state=present update_cache=yes
+
+---------------------------------------------------
+/playbooks
+
+database.yml
+
+---
+ -hosts: all
+  become:true
+  tasks:
+    -name : install msql-server
+     apt : name=mysql-server state=present update_cache=yes
+
+/playbooks
+
+database.yml
+
+--------------------------------------------------------
+/playbooks
+
+webserver.yml
+ -hosts: all
+  become:true
+  tasks:
+    -name : install multiple packages
+     apt : name={{item}} state=present update_cache=yes
+     with_items :
+ 		-apache2
+		-libapache2-mod-wsgi
+		-python-pip
+		-python-virtualenv
+
+
+       
+
+
